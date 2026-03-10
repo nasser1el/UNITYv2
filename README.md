@@ -79,7 +79,7 @@ Adds latent per-SNP class labels `c_m ∈ {00, 10, 01, 11}` to break the posteri
 - **Block 2 (MH):** Propose and accept/reject `p*` using the conditional likelihood given the class labels
 - **Block 3 (optional):** MH update for ρ₀ if inferring sample overlap
 
-Acceptance rates are much higher on simulated data, but the sampler collapses on real GWAS data — see [Gibbs vs MH on Real Data](#gibbs-vs-mh-on-real-data).
+Acceptance rates are much higher on simulated data, but the sampler collapses on real GWAS data (see [Gibbs vs MH on Real Data](#gibbs-vs-mh-on-real-data)). Note that this is not a pure Gibbs sampler, but a Metropolis-within-Gibbs sampler. Gibbs is implemented in Block 1 (sample class assignments) but MH correction is used in Block 2 to accept/reject when updating p (this is where the acceptance rate comes from).
 
 ### 3. Sample Overlap Correction
 
