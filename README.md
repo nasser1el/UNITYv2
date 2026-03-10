@@ -122,7 +122,7 @@ Simulated data matching the Height/BMI parameter regime (M = 100K, N₁ = 252K, 
 | p₁₀                 | 0.013 ± 0.003 | 0.017 ± 0.002 | 0.020 |
 | p₀₁                 | 0.018 ± 0.003 | 0.019 ± 0.002 | 0.020 |
 | p₁₁                 | 0.016 ± 0.003 | 0.014 ± 0.002 | 0.010 |
-| **Acceptance rate** | ~3%           | ~24%          | -     |
+| **Acceptance rate** | ~3%           | ~24% ("Metropolis-within-Gibbs")        | -     |
 
 Both methods recover the true parameters within uncertainty on clean simulated data. The Gibbs sampler achieves 8x higher acceptance and tighter posterior intervals.
 
