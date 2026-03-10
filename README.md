@@ -299,10 +299,9 @@ Heritabilities and genetic correlations sourced from published LDSC estimates in
 
 ## Limitations and Next Steps
 
-- **Fixed h² and ρ.** The model takes heritability and genetic correlation as fixed inputs from LDSC. Jointly estimating them within the MCMC is a natural next step.
+- **Fixed h² and ρ.** The model takes heritability and genetic correlation as fixed inputs from LDSC. The next step is to jointly estimate them within MCMC to avoid the need for LDSC estimates.
 - **LD-pruning approximation.** Taking every Nth SNP is a rough stand-in for proper LD-based pruning. The value of M directly affects the per-SNP signal variance, so all proportion estimates are sensitive to this choice.
 - **Gibbs collapsing bias.** The data augmentation works well on simulated data but collapses on real GWAS data. The underlying identifiability issue may require also augmenting with latent effect sizes.
-- **Single-chain runs.** Running multiple chains and checking Gelman-Rubin R̂ would give better convergence diagnostics.
 
 ---
 
