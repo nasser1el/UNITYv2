@@ -1,7 +1,7 @@
-# Extending UNITY: Improved MCMC Sampling and Sample Overlap Correction for Joint Trait Analysis
+# Extending UNITY: Adaptive MCMC Sampling and Sample Overlap Correction Improves Inference of Shared Genetic Architecture Across Complex Traits
 
-**Nasser Elhajjaoui** · Committee on Genetics, Genomics, & Systems Biology · University of Chicago  
-_Fundamentals of Computational Biology - Models and Inference_
+Nasser Elhajjaoui, Committee on Genetics, Genomics, & Systems Biology, University of Chicago  
+_HGEN48600: Fundamentals of Computational Biology_
 
 ---
 
@@ -47,7 +47,7 @@ Benchmarking the original implementation on real GWAS data revealed three concre
 The original fixed proposal (B = 10) gives acceptance rates below 1% with M > 100K SNPs. Chains can stay stuck at a single value for hundreds of iterations, producing posteriors with zero standard deviation.
 
 **2. Inconsistent hyperparameter sourcing.**
-UNITY takes h² and ρ as fixed inputs, typically from LDSC. LDSC assumes all variants are causal; UNITY models a sparse architecture. Using one to inform the other creates a mismatch in the per-component variance terms.
+UNITY takes h² and ρ as fixed inputs, typically from LDSC. LDSC assumes an infinitesimal model (all variants are causal) while UNITY models a sparse architecture (non-infinitesimal). Using one to inform the other creates a mismatch in the per-component variance terms.
 
 **3. No sample overlap correction.**
 Many GWAS consortia (PGC, GIANT) share control cohorts across studies. Unmodeled overlap creates spurious cross-trait correlation that the model absorbs into p₁₁.
@@ -150,7 +150,7 @@ When ρ₀ = 0.30 exists but is not modeled, spurious cross-trait correlation is
 
 All runs: adaptive MH sampler, 5,000 iterations, 25% burn-in.
 
-#### Height / BMI (GIANT)
+#### Height & BMI (GIANT)
 
 | Parameter         | This work (MH) | Johnson et al. 2018 |
 | ----------------- | -------------- | ------------------- |
@@ -161,7 +161,7 @@ All runs: adaptive MH sampler, 5,000 iterations, 25% burn-in.
 
 The shared component estimate (p₁₁ = 0.029) closely matches the published result (0.026). The lower total causal proportion (~3.3% vs ~4.8%) is likely due to differences in LD-pruning strategy (approximate 10th-SNP selection vs exact 5KB windows) and GWAS versions.
 
-#### SCZ / BIP (PGC)
+#### SCZ & BIP (PGC)
 
 | Parameter      | MH estimate | Interpretation                |
 | -------------- | ----------- | ----------------------------- |
@@ -171,7 +171,7 @@ The shared component estimate (p₁₁ = 0.029) closely matches the published re
 
 Despite high genetic corrrelation (ρ = 0.68), the model finds few shared causal variants. However, it correctly infers a stronger genetic signal in schizophrenia. 
 
-#### HDL / LDL (GLGC)
+#### HDL & LDL (GLGC)
 
 | Parameter    | MH estimate | Interpretation |
 | ------------ | ----------- | -------------- |
@@ -184,9 +184,9 @@ With ρ = −0.10, the model finds minimal sharing and mostly independent geneti
 
 ### Gibbs vs MH on Real Data
 
-On real GWAS data, the Gibbs sampler collapses: p₁₀ and p₀₁ go to near-zero and all causal signal piles into p₁₁. The most extreme case was SCZ/BIP (p₀₁ ≈ 0.964, which is clearly wrong).
+On real GWAS data, the Gibbs sampler can become trapped in an asymmetric mode where most non-null signal is assigned to one of the trait-specific components. The most extreme case was SCZ & BIP (p₀₁ ≈ 0.964).
 
-The reason: once Block 1 labels most SNPs as "shared," Block 2 sees a conditional likelihood that strongly prefers p₁₀ ≈ 0, p₀₁ ≈ 0 — and the cycle reinforces itself. This isn't a bug; it reflects an identifiability issue in the model where the per-component variances shift sharply as p changes.
+This is likely due to the Gibbs updates creating a feedback loop between latent SNP assignments and mixture proportions (once one block assigns many SNPs to a single component, the next block updates the proportions to favor that same component even more strongly and the chain eventually gets stuck). This may be a result of weak biological signal due to the conservative LD-pruning step limiting the number of SNPs available. Potential fixes include replacing the symmetric Dirichlet prior on p with an informed, weakly non-uniform prior or introducing a better LD-based pruning approach to perserve more signal in the original GWAS datasets. 
 
 ![Gibbs posterior estimates](Figures/fig05_posteriorGibbs.png)
 
@@ -293,7 +293,7 @@ out.{id}.{seed}.json         # Structured JSON with config + results + diagnosti
 
 \*Effective sample size: 4 / (1/N_cases + 1/N_controls)
 
-Heritabilities and genetic correlations sourced from published LDSC estimates in the respective papers.
+Heritabilities and genetic correlations are drawn from published LDSC estimates in the respective papers.
 
 ---
 
